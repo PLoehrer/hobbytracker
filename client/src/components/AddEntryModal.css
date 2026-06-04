@@ -142,3 +142,41 @@ input[type="date"].modal__input::-webkit-calendar-picker-indicator {
   opacity: 0.35;
   cursor: not-allowed;
 }
+
+.modal__btn--danger {
+  background: transparent;
+  color: #c05a5a;
+  border: 1px solid rgba(192, 90, 90, 0.4);
+}
+
+.modal__btn--danger:hover:not(:disabled) {
+  background: rgba(192, 90, 90, 0.1);
+  border-color: #c05a5a;
+}
+
+.modal__btn--danger:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.modal__divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.5rem 0;
+}
+
+.modal__delete-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.modal__confirm-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.modal__confirm-actions {
+  display: flex;
+  gap: 0.5rem;
+}

@@ -12,6 +12,7 @@ public static class HobbyEndpoints
         app.MapGet("/hobbies", async (HobdexDbContext db) =>
         {
             var hobbies = await db.Hobbies
+                .OrderBy(h => h.DisplayOrder)
                 .Select(h => new HobbyDto
                 {
                     Id = h.Id,
@@ -19,6 +20,7 @@ public static class HobbyEndpoints
                     ImageUrl = h.ImageUrl,
                     Description = h.Description,
                     IconName = h.IconName,
+                    DisplayOrder = h.DisplayOrder,
                     TotalEntries = h.Entries.Count(),
                     CompletedEntries = h.Entries.Count(e => e.EntryStatus.Name == EntryStatusNames.Completed),
                     InProgressEntries = h.Entries.Count(e => e.EntryStatus.Name == EntryStatusNames.InProgress),
@@ -28,7 +30,7 @@ public static class HobbyEndpoints
             return Results.Ok(hobbies);
         });
 
-        app.MapGet("/hobbies/{id}", async (int id, HobdexDbContext db) =>
+        app.MapGet("/hobbies/{id:int}", async (int id, HobdexDbContext db) =>
         {
             var hobby = await db.Hobbies
                 .Where(h => h.Id == id)
@@ -39,6 +41,7 @@ public static class HobbyEndpoints
                     ImageUrl = h.ImageUrl,
                     Description = h.Description,
                     IconName = h.IconName,
+                    DisplayOrder = h.DisplayOrder,
                     TotalEntries = h.Entries.Count(),
                     CompletedEntries = h.Entries.Count(e => e.EntryStatus.Name == EntryStatusNames.Completed),
                     InProgressEntries = h.Entries.Count(e => e.EntryStatus.Name == EntryStatusNames.InProgress),
@@ -46,6 +49,45 @@ public static class HobbyEndpoints
                 .FirstOrDefaultAsync();
 
             return hobby is null ? Results.NotFound() : Results.Ok(hobby);
+        });
+
+        app.MapPut("/hobbies/{id:int}", async (int id, UpdateHobbyDto dto, HobdexDbContext db) =>
+        {
+            var hobby = await db.Hobbies.FindAsync(id);
+            if (hobby is null) return Results.NotFound();
+
+            hobby.Name = dto.Name;
+            hobby.Description = dto.Description;
+            hobby.UpdatedOn = DateTime.UtcNow;
+            hobby.UpdatedBy = 0;
+
+            await db.SaveChangesAsync();
+            return Results.NoContent();
+        });
+
+        app.MapPut("/hobbies/reorder", async (ReorderHobbiesDto dto, HobdexDbContext db) =>
+        {
+            var hobbies = await db.Hobbies.Where(h => dto.Ids.Contains(h.Id)).ToListAsync();
+            for (int i = 0; i < dto.Ids.Length; i++)
+            {
+                var hobby = hobbies.FirstOrDefault(h => h.Id == dto.Ids[i]);
+                if (hobby is not null) hobby.DisplayOrder = i + 1;
+            }
+            await db.SaveChangesAsync();
+            return Results.NoContent();
+        });
+
+        app.MapDelete("/hobbies/{id:int}", async (int id, HobdexDbContext db) =>
+        {
+            var hobby = await db.Hobbies.FindAsync(id);
+            if (hobby is null) return Results.NotFound();
+
+            hobby.IsDeleted = true;
+            hobby.UpdatedOn = DateTime.UtcNow;
+            hobby.UpdatedBy = 0;
+
+            await db.SaveChangesAsync();
+            return Results.NoContent();
         });
     }
 }

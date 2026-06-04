@@ -4,6 +4,7 @@ export interface Hobby {
     imageUrl?: string
     description?: string
     iconName?: IconName
+    displayOrder: number
     totalEntries: number
     completedEntries: number
     inProgressEntries: number

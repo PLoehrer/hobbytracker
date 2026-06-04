@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Box, Axe, Book, Dumbbell, Music, Paintbrush, MapPin, Gamepad2, Tv, Clapperboard, Plus } from 'lucide-react'
+import { ArrowLeft, Box, Axe, Book, Dumbbell, Music, Paintbrush, MapPin, Gamepad2, Tv, Clapperboard, Plus, Pencil } from 'lucide-react'
 import type { Hobby } from '../../types/Hobby'
 import type { Entry } from '../../types/Entry'
 import EntryCard from '../../components/EntryCard'
 import AddEntryModal from '../../components/AddEntryModal'
 import EditEntryModal from '../../components/EditEntryModal'
+import EditHobbyModal from '../../components/EditHobbyModal'
 import './HobbyDetailPage.css'
 
 const iconMap = {
@@ -27,6 +28,7 @@ function HobbyDetailPage() {
   const [hobby, setHobby] = useState<Hobby | null>(null)
   const [entries, setEntries] = useState<Entry[]>([])
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showEditHobbyModal, setShowEditHobbyModal] = useState(false)
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const API_URL = import.meta.env.VITE_API_URL
@@ -73,7 +75,13 @@ function HobbyDetailPage() {
           {Icon && <Icon size={40} />}
         </div>
         <div className="hobby-detail__meta">
-          <h1 className="hobby-detail__name">{hobby.name}</h1>
+          <div className="hobby-detail__name-row">
+            <h1 className="hobby-detail__name">{hobby.name}</h1>
+            <button className="hobby-detail__edit-btn" onClick={() => setShowEditHobbyModal(true)}>
+              <Pencil size={13} />
+              Edit
+            </button>
+          </div>
           {hobby.description && (
             <p className="hobby-detail__description">{hobby.description}</p>
           )}
@@ -126,6 +134,15 @@ function HobbyDetailPage() {
           entry={editingEntry}
           onClose={() => setEditingEntry(null)}
           onSuccess={() => { setEditingEntry(null); setRefreshKey(k => k + 1) }}
+        />
+      )}
+
+      {showEditHobbyModal && (
+        <EditHobbyModal
+          hobby={hobby}
+          onClose={() => setShowEditHobbyModal(false)}
+          onSuccess={(updated) => { setHobby(updated); setShowEditHobbyModal(false) }}
+          onDeleted={() => navigate('/')}
         />
       )}
     </main>
