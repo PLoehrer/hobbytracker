@@ -1,6 +1,7 @@
 import { Box, Axe, Book, Dumbbell, Music, Paintbrush, MapPin, Gamepad2, Tv, Clapperboard } from 'lucide-react'
 import type { Hobby } from '../types/Hobby'
 import './HobbyCard.css'
+import { useNavigate } from 'react-router-dom'
 
 interface HobbyCardProps {
     hobby: Hobby
@@ -21,9 +22,10 @@ const iconMap = {
 
 function HobbyCard({ hobby }: HobbyCardProps) {
     const Icon = iconMap[hobby.iconName ?? "box"]
+    const navigate = useNavigate()
 
     return (
-        <div className="hobby-card">
+        <div className="hobby-card" onClick={() => navigate(`/hobbies/${hobby.id}`)}>
             {hobby.imageUrl && (
                 <img className="hobby-card__image" src={hobby.imageUrl} alt={hobby.name} />
             )}
