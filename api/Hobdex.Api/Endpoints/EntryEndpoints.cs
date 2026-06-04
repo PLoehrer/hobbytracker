@@ -52,5 +52,23 @@ public static class EntryEndpoints
             await db.SaveChangesAsync();
             return Results.Created($"/entries/{entry.Id}", entry.Id);
         });
+
+        app.MapPut("/entries/{id:int}", async (int id, UpdateEntryDto dto, HobdexDbContext db) =>
+        {
+            var entry = await db.Entries.FindAsync(id);
+            if (entry is null) return Results.NotFound();
+
+            entry.Title = dto.Title;
+            entry.Description = dto.Description;
+            entry.EntryStatusId = dto.EntryStatusId;
+            entry.EntryTypeId = dto.EntryTypeId;
+            entry.StartDate = dto.StartDate;
+            entry.EndDate = dto.EndDate;
+            entry.UpdatedOn = DateTime.UtcNow;
+            entry.UpdatedBy = 0; // placeholder until auth
+
+            await db.SaveChangesAsync();
+            return Results.NoContent();
+        });
     }
 }

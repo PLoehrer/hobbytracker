@@ -3,6 +3,7 @@ import './EntryCard.css'
 
 interface EntryCardProps {
   entry: Entry
+  onClick?: () => void
 }
 
 const statusClassMap: Record<string, string> = {
@@ -17,11 +18,11 @@ function formatDate(dateStr?: string): string {
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
 }
 
-function EntryCard({ entry }: EntryCardProps) {
+function EntryCard({ entry, onClick }: EntryCardProps) {
   const statusClass = statusClassMap[entry.entryStatusName] ?? 'status--not-started'
 
   return (
-    <div className="entry-card">
+    <div className="entry-card" onClick={onClick} style={onClick ? { cursor: 'pointer' } : undefined}>
       <div className="entry-card__header">
         <span className={`entry-card__status ${statusClass}`}>{entry.entryStatusName}</span>
         {entry.entryTypeName && (

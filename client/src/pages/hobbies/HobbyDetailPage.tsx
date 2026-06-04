@@ -5,6 +5,7 @@ import type { Hobby } from '../../types/Hobby'
 import type { Entry } from '../../types/Entry'
 import EntryCard from '../../components/EntryCard'
 import AddEntryModal from '../../components/AddEntryModal'
+import EditEntryModal from '../../components/EditEntryModal'
 import './HobbyDetailPage.css'
 
 const iconMap = {
@@ -26,6 +27,7 @@ function HobbyDetailPage() {
   const [hobby, setHobby] = useState<Hobby | null>(null)
   const [entries, setEntries] = useState<Entry[]>([])
   const [showAddModal, setShowAddModal] = useState(false)
+  const [editingEntry, setEditingEntry] = useState<Entry | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const API_URL = import.meta.env.VITE_API_URL
 
@@ -105,7 +107,7 @@ function HobbyDetailPage() {
         ) : (
           <div className="entry-scroll">
             {sortedEntries.map(entry => (
-              <EntryCard key={entry.id} entry={entry} />
+              <EntryCard key={entry.id} entry={entry} onClick={() => setEditingEntry(entry)} />
             ))}
           </div>
         )}
@@ -116,6 +118,14 @@ function HobbyDetailPage() {
           hobbyId={hobby.id}
           onClose={() => setShowAddModal(false)}
           onSuccess={handleEntryAdded}
+        />
+      )}
+
+      {editingEntry && (
+        <EditEntryModal
+          entry={editingEntry}
+          onClose={() => setEditingEntry(null)}
+          onSuccess={() => { setEditingEntry(null); setRefreshKey(k => k + 1) }}
         />
       )}
     </main>

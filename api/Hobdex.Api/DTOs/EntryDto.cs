@@ -23,3 +23,12 @@ public record CreateEntryDto(
     DateTime? StartDate,
     DateTime? EndDate
 );
+
+public record UpdateEntryDto(
+    string Title,
+    string? Description,
+    int EntryStatusId,
+    int? EntryTypeId,
+    DateTime? StartDate,
+    DateTime? EndDate
+);
